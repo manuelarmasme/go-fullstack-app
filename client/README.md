@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# React + TanStack + Chakra Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This Vite-powered React application consumes the Go Todo API exposed under `/api/v1/todos`. It demonstrates how to pair TanStack Query’s data-management model with Chakra UI’s component system to build a responsive and theme-aware client for the Go exercise.
 
-Currently, two official plugins are available:
+## Tech Stack
+- **React 19 + TypeScript + Vite** for a fast DX and modern JSX runtime.
+- **TanStack Query v5** to fetch, cache, and mutate todos from the Go API without manual state juggling.
+- **Chakra UI 3 + next-themes** for accessible UI primitives, color-mode switching, and consistent design tokens.
+- **ESLint, Prettier, and TypeScript** keep the codebase typed and linted.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+```bash
+cd client
+pnpm install
+pnpm dev
 ```
+Vite serves the client on `http://localhost:5173`. Make sure the Go API is running and that CORS allows this origin.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Environment Variables
+Create a `client/.env` (or `.env.local`) and point each endpoint to your Go API instance:
 ```
+VITE_API_GO_URL_GET_TODOS=http://localhost:4000/api/v1/todos
+VITE_API_GO_URL_CREATE_TODO=http://localhost:4000/api/v1/todos
+VITE_API_GO_URL_UPDATE_TODO=http://localhost:4000/api/v1/todos
+VITE_API_GO_URL_DELETE_TODO=http://localhost:4000/api/v1/todos
+```
+Adjust the URLs if you run the API elsewhere or behind a proxy.
+
+## Available Scripts
+- `pnpm dev` – start Vite in development mode.
+- `pnpm build` – type-check and create a production build.
+- `pnpm preview` – preview the built assets locally.
+- `pnpm lint` – run ESLint with the shared config.
+
+## Feature Notes
+- `src/features/todos` contains the UI and hooks that call the Go API through TanStack Query.
+- Chakra UI providers (see `src/components/ui/provider.tsx`) configure themes, color mode, toasts, and tooltips shared across the app.
+- Reusable constants for API URLs live in `src/lib/constant/constant.ts`, keeping fetch logic declarative and environment-driven.
+
+Use this client as a sandbox to explore how React, TanStack Query, and Chakra UI coordinate when consuming a Go-based REST API.
+    },
