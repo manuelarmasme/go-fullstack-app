@@ -1,28 +1,10 @@
-import type { Todo } from '../types/index';
 import { Flex, Spinner, Stack, Text } from '@chakra-ui/react';
 import TodoItem from './todo-item';
-import { useQuery } from '@tanstack/react-query';
-import { APP_CONFIG_VARIABLES } from '@/lib/constant/constant';
+import { useTodos } from '../hooks/useTodos';
 
 function TodoList() {
-    const {data: todosData, isLoading } = useQuery<Todo[]>({
-        queryKey: ['todos'],
-        queryFn: async () => {
-            try {
-                const response = await fetch(APP_CONFIG_VARIABLES.API_GO_URL_GET_TODOS);
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const todos = await response.json();
-                return todos ?? [];
-
-            } catch (error) {
-                console.error(error as Error);
-            }
-        }
-    })
+    const {todosQuery} = useTodos();
+    const { data: todosData, isLoading } = todosQuery;
 
     return (
         <>

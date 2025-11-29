@@ -1,74 +1,19 @@
 import { Badge, Box, Flex, Spinner, Text } from "@chakra-ui/react"
-import { Toaster, toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster"
 import type { Todo } from "../types"
 import { FaCheckCircle } from "react-icons/fa"
 import { MdDelete } from "react-icons/md"
 import { useColorMode } from "@/components/ui/color-mode"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { APP_CONFIG_VARIABLES } from "@/lib/constant/constant"
+import { useTodos } from "../hooks/useTodos"
 
 
 function TodoItem({todo}: {todo: Todo}) {
     const { colorMode } = useColorMode()
 
-    const queryClient = useQueryClient()
+    const { updateTodo, deleteTodo } = useTodos()
 
-    const {mutate: updateTodo, isPending: isUpdating} = useMutation({
-        mutationKey: ['update-todo'],
-        mutationFn: async () => {
-            if (todo.completed) return toaster.warning({
-                title: "Esta tarea ya está completada",
-                closable: true,
-            });
-
-            try {
-                const res = await fetch(APP_CONFIG_VARIABLES.API_GO_URL_UPDATE_TODO + todo._id,{
-                    method: 'PATCH'
-                })
-
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await res.json();
-                return data;
-            } catch (error) {
-                console.error(error as Error);
-            }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['todos'] });
-        }
-    })
-
-    const {mutate: deleteTodo, isPending: isDeleting} = useMutation({
-        mutationKey: ['delete-todo'],
-        mutationFn: async () => {
-
-
-            try {
-                const res = await fetch(APP_CONFIG_VARIABLES.API_GO_URL_DELETE_TODO + todo._id,{
-                    method: 'DELETE'
-                })
-
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await res.json();
-                return data;
-            } catch (error) {
-                console.error(error as Error);
-            }
-        },
-        onSuccess: () => {
-            toaster.success({
-                title: "Tarea eliminada con éxito",
-                closable: true,
-            });
-            queryClient.invalidateQueries({ queryKey: ['todos'] });
-        }
-    })
+    const {mutate: updateTodoMutate, isPending: isUpdating} = updateTodo
+    const {mutate: deleteTodoMutate, isPending: isDeleting} = deleteTodo
 
     return (
         <Flex gap={2} alignItems={"center"} bg={colorMode === "light" ? "gray.700" : "gray.700"} p={3} borderRadius={"lg"}>
@@ -84,10 +29,10 @@ function TodoItem({todo}: {todo: Todo}) {
             </Flex>
 
             <Flex gap={2} alignItems={"center"}>
-                <Box color="gray.400" cursor={"pointer"} onClick={() => updateTodo()}>
+                <Box color="gray.400" cursor={"pointer"} onClick={() => updateTodoMutate(todo._id)}>
                     {isUpdating ? <Spinner /> : <FaCheckCircle color={todo.completed ? "green" : "gray"} cursor={"pointer"}/>}
                 </Box>
-                <Box color={"red.400"} cursor={"pointer"} onClick={() => deleteTodo()}>
+                <Box color={"red.400"} cursor={"pointer"} onClick={() => deleteTodoMutate(todo._id)}>
                     {isDeleting ? <Spinner /> : <MdDelete />}
                 </Box>
             </Flex>
