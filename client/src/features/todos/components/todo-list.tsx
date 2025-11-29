@@ -4,7 +4,7 @@ import { useTodos } from '../hooks/useTodos';
 
 function TodoList() {
     const {todosQuery} = useTodos();
-    const { data: todosData, isLoading } = todosQuery;
+    const { data: todosData, isLoading, isError } = todosQuery;
 
     return (
         <>
@@ -29,6 +29,11 @@ function TodoList() {
                         <TodoItem key={index} todo={todo} />
                     )}
                 </Stack>
+            )}
+            { isError && (
+                <Flex flexDirection={"column"} justifyContent="center" alignItems="center" height="100px">
+                    <Text fontSize={"lg"}>Hubo un error al cargar las tareas, por favor intenta nuevamente.</Text>
+                </Flex>
             )}
         </>
     );
